@@ -145,7 +145,7 @@ def build_emacs(
                 file=sys.stderr,
             )
 
-        raise
+        die("Failed to configure Emacs build.")
 
     log("Building Emacs...")
     run(["make", f"-j{options.jobs}"])
