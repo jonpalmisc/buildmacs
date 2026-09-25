@@ -71,24 +71,37 @@ DEPENDENCIES = (
     ),
 )
 
+GNU_MIRROR_BASE = "https://ftpmirror.gnu.org/gnu/"
+KERNEL_MIRROR_BASE = "https://mirrors.kernel.org/gnu/"
+
 
 def download(url: str, dest: Path) -> None:
     if dest.is_file():
         return
 
-    temporary = dest.with_name(dest.name + ".part")
-    try:
-        with (
-            urlopen(url, timeout=30) as response,
-            temporary.open("wb") as output,
-        ):
-            while chunk := response.read(1024 * 1024):
-                output.write(chunk)
+    urls = (url,)
+    if url.startswith(GNU_MIRROR_BASE):
+        # The GNU URLs are (unsurprisingly) pretty unreliable.
+        urls += (url.replace(GNU_MIRROR_BASE, KERNEL_MIRROR_BASE, 1),)
 
-        temporary.replace(dest)
-    except OSError as error:
-        temporary.unlink(missing_ok=True)
-        raise RuntimeError(f"Download failed: {url}") from error
+    temporary = dest.with_name(dest.name + ".part")
+    for source_url in urls:
+        try:
+            with (
+                urlopen(source_url, timeout=30) as response,
+                temporary.open("wb") as output,
+            ):
+                while chunk := response.read(1024 * 1024):
+                    output.write(chunk)
+
+            temporary.replace(dest)
+            return
+        except OSError:
+            temporary.unlink(missing_ok=True)
+            if source_url == urls[-1]:
+                die(f"Download failed: {', '.join(urls)}")
+
+            log(f"Download failed: {source_url} (will try next mirror)")
 
 
 def ensure_deps_present(prefix: Path) -> None:
