@@ -1,0 +1,56 @@
+name: Build Emacs
+
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v7
+
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Install build tools
+        run: |
+          brew install autoconf pkgconf texinfo
+          echo "$(brew --prefix texinfo)/bin" >> "$GITHUB_PATH"
+
+      - name: Install Buildmacs
+        run: python -m pip install .
+
+      - name: Download & build dependencies
+        run: buildmacs deps
+
+      - name: Build app bundle
+        run: buildmacs app
+
+      - name: Upload app bundle
+        background: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: emacs-app
+          path: buildmacs-work/dist/Emacs-*.tar.xz
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Build terminal distribution
+        run: buildmacs terminal
+
+      - name: Upload terminal distribution
+        uses: actions/upload-artifact@v7
+        with:
+          name: emacs-terminal
+          path: buildmacs-work/dist/temacs-*.tar.xz
+          if-no-files-found: error
+          compression-level: 0
