@@ -22,9 +22,9 @@ def add_workspace_option(command: ArgumentParser) -> None:
 
 def add_macos_target_option(command: ArgumentParser) -> None:
     command.add_argument(
-        "--macos-target",
+        "--min-os",
         metavar="VERSION",
-        help="minimum macOS version to support",
+        help="minimum macOS version (e.g. '26.0') to support",
     )
 
 
@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> None:
     clean_cmd.add_argument(
         "--deep",
         action="store_true",
-        help="also remove downloaded tarballs and the src/ directory",
+        help="also remove 'src' directory (includes downloaded tarballs)",
     )
 
     args = parser.parse_args(argv)
