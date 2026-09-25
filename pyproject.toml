@@ -1,0 +1,53 @@
+[project]
+name = "buildmacs"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+buildmacs = "buildmacs.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+    "ty>=0.0.83",
+]
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ANN",
+    "ARG",
+    "B",
+    "BLE",
+    "C4",
+    "C90",
+    "E",
+    "F",
+    "FURB",
+    "I",
+    "ICN",
+    "ISC",
+    "LOG",
+    "N",
+    "PD",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PLC",
+    "PT",
+    "PTH",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "TID",
+    "TC",
+    "UP",
+    "W",
+]
