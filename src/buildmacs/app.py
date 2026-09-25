@@ -17,7 +17,7 @@ class BuildOptions:
     workspace: Path
     jobs: int
     branch: str
-    macos_target: str | None = None
+    min_os: str | None = None
 
 
 EMACS_REPO = "https://github.com/emacs-mirror/emacs.git"
@@ -117,7 +117,7 @@ def build_emacs(
 
     ensure_deps_present(prefix)
 
-    env = emacs_build_env(prefix, options.macos_target)
+    env = emacs_build_env(prefix, options.min_os)
     prep_emacs_source(source, options.branch)
     run = partial(run_command, cwd=source, env=env)
 

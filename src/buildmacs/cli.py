@@ -20,17 +20,17 @@ def add_workspace_option(command: ArgumentParser) -> None:
     )
 
 
-def add_macos_target_option(command: ArgumentParser) -> None:
+def add_min_os_option(command: ArgumentParser) -> None:
     command.add_argument(
-        "--macos-target",
+        "--min-os",
         metavar="VERSION",
-        help="minimum macOS version to support",
+        help="minimum macOS version (e.g. '26.0') to support",
     )
 
 
 def add_build_options(command: ArgumentParser, default_jobs: int) -> None:
     add_workspace_option(command)
-    add_macos_target_option(command)
+    add_min_os_option(command)
     command.add_argument(
         "--jobs",
         type=int,
@@ -50,7 +50,7 @@ def main(argv: list[str] | None = None) -> None:
 
     deps_cmd = commands.add_parser("deps", help="download and build dependencies")
     add_workspace_option(deps_cmd)
-    add_macos_target_option(deps_cmd)
+    add_min_os_option(deps_cmd)
     deps_cmd.add_argument(
         "--jobs",
         type=int,
@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> None:
     clean_cmd.add_argument(
         "--deep",
         action="store_true",
-        help="also remove downloaded tarballs and the src/ directory",
+        help="also remove 'src' directory (includes downloaded tarballs)",
     )
 
     args = parser.parse_args(argv)
@@ -83,12 +83,12 @@ def main(argv: list[str] | None = None) -> None:
     started = perf_counter()
 
     if args.command == "deps":
-        build_deps(args.workspace, args.jobs, args.dl_jobs, args.macos_target)
+        build_deps(args.workspace, args.jobs, args.dl_jobs, args.min_os)
     elif args.command == "clean":
         clean_workspace(args.workspace, args.deep)
     else:
         options = BuildOptions(
-            args.workspace, args.jobs, args.branch, args.macos_target
+            args.workspace, args.jobs, args.branch, args.min_os
         )
         if args.command == "app":
             build_app(options)

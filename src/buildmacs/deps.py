@@ -115,7 +115,7 @@ def ensure_deps_present(prefix: Path) -> None:
 
 
 def build_deps(
-    workspace: Path, jobs: int, dl_jobs: int, macos_target: str | None = None
+    workspace: Path, jobs: int, dl_jobs: int, min_os: str | None = None
 ) -> None:
     workspace = workspace.expanduser().resolve()
     prefix = workspace / "prefix"
@@ -136,8 +136,8 @@ def build_deps(
     env["CPPFLAGS"] = f"-I{prefix / 'include'}"
     env["LDFLAGS"] = f"-L{prefix / 'lib'}"
 
-    if macos_target is not None:
-        env["MACOSX_DEPLOYMENT_TARGET"] = macos_target
+    if min_os is not None:
+        env["MACOSX_DEPLOYMENT_TARGET"] = min_os
 
     log("Downloading dependencies...")
 
